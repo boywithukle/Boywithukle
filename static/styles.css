@@ -1,0 +1,322 @@
+/* General Styling */
+body {
+    font-family: 'Barlow', sans-serif;
+    font-size: 18px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+hr {
+    border: 0; /* Remove default border */
+    height: 2px; /* Set height */
+    background: #00bfff; /* Set background color */
+    margin: 20px 0; /* Set top and bottom margin */
+    width: 20%; /* Set width */
+    align-self: center; /* Center align horizontally if in a flex container */
+}
+
+/* Header */
+h1 {
+    font-size: 3.5em;
+    color: #00abff;
+    text-align: center;
+    position: relative;
+    margin: 20px 0 10px 0; /* Top, Bottom margins adjusted */
+}
+
+/* Dark Mode Toggle Button */
+#darkModeToggle {
+    position: absolute;
+    top: 13px;
+    right: 20px;
+    cursor: pointer;
+    background: var(--button-bg-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    z-index: 3;
+}
+
+#darkModeToggle svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--svg-icon-color);
+}
+
+#darkModeToggle:hover {
+    background-color: var(--button-hover-bg-color);
+}
+
+/* Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    margin: 0;
+}
+
+/* Player Button */
+#playPauseBtn {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.88);
+    transition: background-color 0.3s;
+    margin: 10px 0 30px 0; /* Adjusted margin */
+}
+
+#playPauseBtn svg {
+    width: 50%;
+    height: 50%;
+    fill: #fff;
+}
+
+#playPauseBtn:hover {
+    background-color: var(--button-hover-bg-color);
+}
+
+
+/* Circular Progress Bar */
+#circularProgressBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(var(--progress-bar-gradient), transparent 0);
+    transition: background 0.3s;
+    z-index: -1;
+}
+
+#playPauseBtn:hover #circularProgressBar,
+#playPauseBtn #circularProgressBar {
+    background: conic-gradient(var(--progress-bar-gradient) var(--progress), transparent 0);
+    transition: background 0.3s;
+}
+
+/* Input & Button Styling */
+.input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0; /* Adjusted margin */
+    position: relative;
+    width: 100%;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px; /* Adjust width for responsiveness */
+    margin-bottom: 10px; /* Space below input */
+}
+
+#guess {
+    padding: 10px 15px;
+    border-radius: 30px;
+    border: 1px solid var(--input-border-color);
+    background-color: var(--input-bg-color);
+    color: var(--input-text-color);
+    outline: none;
+    font-size: 1em;
+    width: 100%;
+}
+
+#guess:focus {
+    border-color: var(--button-hover-bg-color);
+}
+
+#submitGuess {
+    position: absolute;
+    right: -16px; /* Increase the right value to move it further to the right */
+    top: 53%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+#submitGuess svg {
+    width: 35px;
+    height: 35px;
+    fill: white;
+}
+
+#submitGuess:hover svg {
+    fill: var(--button-hover-bg-color);
+}
+
+
+/* Result & Tries */
+#result {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #000;
+    text-align: center;
+    margin-bottom: 10px; /* Space below result */
+}
+
+#tries {
+    margin: 10px 0 20px 0; /* Adjusted margin */
+    font-size: 1em;
+    color: #000;
+    text-align: center;
+}
+
+/* Guess Boxes */
+.guessBox {
+    padding: 5px 15px;
+    margin: 5px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 1em;
+    position: relative;
+    margin-top: -20px; /* Move guess boxes upwards */
+}
+
+.correct {
+    background-color: var(--correct-bg-color);
+    color: var(--correct-text-color);
+}
+
+.incorrect {
+    background-color: var(--incorrect-bg-color);
+    color: var(--incorrect-text-color);
+}
+
+/* Suggestions List */
+#suggestionsList {
+    position: absolute;
+    top: 100%;
+    margin-top: 5px;
+    max-height: 100px;
+    width: 35%;
+    overflow-y: auto;
+    background-color: var(--suggestion-bg-color);
+    border-radius: 10px;
+    border: 1px solid var(--input-border-color);
+    margin-bottom: 10px; /* Space below suggestions list */
+}
+
+.suggestionItem {
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.suggestionItem:hover {
+    background-color: var(--suggestion-hover-bg-color);
+}
+
+/* Dark Mode Variables */
+.dark-mode {
+    --background-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --svg-icon-color: #ffffff;
+    --progress-bar-gradient: #4caf50, #8bc34a;
+    --button-border-color: #555555;
+    --correct-bg-color: #00c853;
+    --correct-text-color: #ffffff;
+    --incorrect-bg-color: #d32f2f;
+    --incorrect-text-color: #ffffff;
+    --input-bg-color: #333333;
+    --input-text-color: #ffffff;
+    --input-border-color: #555555;
+    --button-bg-color: #6200ea;
+    --button-text-color: #ffffff;
+    --button-hover-bg-color: #3600b375;
+    --suggestion-bg-color: #333333;
+    --suggestion-hover-bg-color: #a07fce;
+}
+
+/* Light Mode Variables */
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --svg-icon-color: #ffffff;
+    --progress-bar-gradient: #2196f3, #64b5f6;
+    --button-border-color: #cccccc;
+    --button-bg-color: #6200ea;
+    --button-text-color: #ffffff;
+    --button-hover-bg-color: #3600b36e;
+    --correct-bg-color: #00c853;
+    --correct-text-color: #ffffff;
+    --incorrect-bg-color: #d32f2f;
+    --incorrect-text-color: #ffffff;
+    --input-bg-color: #f1f1f1;
+    --input-text-color: #000000;
+    --input-border-color: #cccccc;
+    --suggestion-bg-color: #ffffff;
+    --suggestion-hover-bg-color: #6200ea;
+}
+
+/* Backdrop styling */
+#backdrop {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    width: 90%;
+    max-width: 939px;
+    height: 90%;
+    background-color: rgba(94, 99, 119, 0.44);
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    z-index: -1;
+}
+
+/* Ensure other main content elements are positioned relative */
+.container, .main-content {
+    position: relative;
+    z-index: 3;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5em;
+        margin-top: 5%;
+    }
+
+    #playPauseBtn {
+        width: 60px;
+        height: 60px;
+    }
+
+    .input-container {
+        width: 100%;
+        padding: 0 10px;
+    }
+
+    #submitGuess svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .guessBox {
+        font-size: 0.9em;
+        padding: 5px 10px;
+    }
+}
