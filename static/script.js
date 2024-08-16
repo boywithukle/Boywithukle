@@ -8,8 +8,6 @@ let incorrectGuessesDiv = document.getElementById("incorrectGuesses"); // Div to
 let suggestionsList = document.getElementById("suggestionsList"); // Suggestions dropdown
 let circularProgressBar = document.getElementById("circularProgressBar"); // Circular progress bar
 
-
-
 let maxTries = 5;
 let currentTry = 0;
 let startTime = Math.floor(Math.random() * 120); // Random start time in seconds
@@ -17,24 +15,41 @@ let duration = 5;
 let isPlaying = false;
 let userHasInteracted = false;
 let songNames = []; // To store song names
-
+let songDataList = []; // To store song data (titles and IDs)
 
 // Fetch songs and set the selected song
 fetch('/songs')
     .then(response => response.json())
     .then(data => {
-        songNames = data.songs.map(song => song.replace('.mp3', '')); // Strip the .mp3 extension
+        songDataList = data.songs; // Store both video titles and IDs
         if (data.selected_song) {
             currentSong = data.selected_song;
-            audio.src = `/songs/${currentSong}`;
+            console.log('Selected song:', currentSong); // Debugging
+            // Set up the audio source based on the selected song's ID
+            fetch(`/songs/${currentSong.id}`)
+                .then(response => response.json())
+                .then(songData => {
+                    if (songData.audio_url) {
+                        audio.src = songData.audio_url; // Use the audio URL for streaming
+                        console.log('Audio URL:', audio.src); // Debugging
+                    } else {
+                        console.error('Error: No audio URL found.');
+                    }
+                })
+                .catch(error => console.error('Error fetching song:', error));
         } else {
             result.innerText = "No songs available.";
+            console.error('Error: No selected song found.');
         }
-    });
+    })
+    .catch(error => console.error('Error fetching song data:', error));
 
 // Play the song clip
 function playClip() {
-    if (!userHasInteracted || isPlaying) return; // Ensure the user has interacted and avoid replaying if already playing
+    if (!userHasInteracted || isPlaying || !audio.src) {
+        console.error('Cannot play clip: userHasInteracted:', userHasInteracted, ', isPlaying:', isPlaying, ', audio.src:', audio.src); // Debugging
+        return;
+    }
 
     audio.currentTime = startTime;
     audio.play()
@@ -56,6 +71,9 @@ function togglePlay() {
     playClip(); // Play the clip
 }
 
+// Add event listener to play button
+playPauseBtn.addEventListener("click", togglePlay);
+
 // Show suggestions list when input is focused
 guessInput.addEventListener("focus", () => {
     suggestionsList.style.display = "block";
@@ -75,13 +93,6 @@ suggestionsList.addEventListener("mousedown", (event) => {
     }
 });
 
-// Hide suggestions list if clicking outside of the input field and suggestions list
-document.addEventListener("click", (event) => {
-    if (!guessInput.contains(event.target) && !suggestionsList.contains(event.target)) {
-        suggestionsList.style.display = "none";
-    }
-});
-
 // Update the circular progress bar
 function updateProgressBar() {
     let progress = 0;
@@ -94,13 +105,6 @@ function updateProgressBar() {
     }, 100);
 }
 
-// Add event listener to play button
-playPauseBtn.addEventListener("click", togglePlay);
-
-
-
-
-
 // Handle guess submission
 document.getElementById("submitGuess").addEventListener("click", function() {
     let guess = guessInput.value.toLowerCase();
@@ -111,15 +115,14 @@ document.getElementById("submitGuess").addEventListener("click", function() {
 
     currentTry++;
 
-    if (guess === currentSong.replace('.mp3', '').toLowerCase()) {
-        result.innerText = `Correct! The song is ${currentSong.replace('.mp3', '')}`;
+    if (guess === currentSong.title.toLowerCase()) { // Compare guess with the current song's title
+        result.innerText = `Correct! The song is ${currentSong.title}`;
         guessInput.disabled = true; // Disable input after correct guess
         document.getElementById("submitGuess").disabled = true; // Disable button after correct guess
         displayCorrectGuess(guess);
         audio.pause();
         isPlaying = false;
         triggerConfetti(); // Call confetti function
-        
     } else {
         result.innerText = "Incorrect, try again!";
         displayIncorrectGuess(guess);
@@ -128,7 +131,7 @@ document.getElementById("submitGuess").addEventListener("click", function() {
     }
 
     if (currentTry >= maxTries) {
-        result.innerText = `Sorry, the song was ${currentSong.replace('.mp3', '')}`;
+        result.innerText = `Sorry, the song was ${currentSong.title}`;
         audio.pause();
         isPlaying = false;
     }
@@ -158,16 +161,16 @@ function showSuggestions(value) {
     suggestionsList.innerHTML = ""; // Clear previous suggestions
 
     if (value) {
-        const filteredSongs = songNames.filter(song =>
-            song.toLowerCase().includes(value.toLowerCase())
+        const filteredSongs = songDataList.filter(song =>
+            song.title.toLowerCase().includes(value.toLowerCase())
         );
 
         filteredSongs.forEach(song => {
             const suggestionItem = document.createElement("div");
             suggestionItem.className = "suggestionItem";
-            suggestionItem.innerText = song;
+            suggestionItem.innerText = song.title; // Show the song title in the suggestions
             suggestionItem.addEventListener("click", () => {
-                guessInput.value = song;
+                guessInput.value = song.title; // Set input value to the selected title
                 suggestionsList.innerHTML = ""; // Clear suggestions after selection
             });
             suggestionsList.appendChild(suggestionItem);
@@ -182,13 +185,11 @@ guessInput.addEventListener("input", function() {
 
 // Handle dark mode toggle and preference storage
 document.addEventListener('DOMContentLoaded', () => {
-    // Check for dark mode preference in localStorage
     if (localStorage.getItem('darkMode') === 'enabled' ||
         (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.body.classList.add('dark-mode');
     }
 
-    // Dark mode toggle button
     const darkModeToggle = document.getElementById('darkModeToggle');
     darkModeToggle.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
@@ -199,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
 
 // Function to trigger confetti
 function triggerConfetti() {
